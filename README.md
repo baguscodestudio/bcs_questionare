@@ -1,7 +1,8 @@
 # BCS Questionare
 
 This allows for easy exports and callbacks for configurable quizes or tests.
-![PreviewGif](https://media.discordapp.net/attachments/856060200011038762/932165720991756318/Questionare.gif)
+![2022-01-16 11-41-50](https://user-images.githubusercontent.com/60974759/149651916-276197c1-f8ce-4a88-bb5a-a39e905237eb.gif)
+
 
 ## Features
 
@@ -100,6 +101,10 @@ end)
 ```
 
 Add your image in html/images folder as a png, then you can just show the image using the image property in the data parameter
+
+### Support
+Is available in my discord (No need to create a ticket) or you can create an issue here
+https://discord.gg/caa7xt2d8G
 
 ## Contributing
 
