@@ -40,6 +40,11 @@ function App() {
     setDisplay(data.display);
   });
 
+  const handleClose = () => {
+    setDisplay(false);
+    setStart(false);
+  };
+
   useExitListener(setDisplay);
 
   if (!display) return null;
@@ -75,6 +80,7 @@ function App() {
                   style={{
                     backgroundColor: '#19181D',
                   }}
+                  onClick={handleClose}
                 >
                   {questions.cancel}
                 </button>
