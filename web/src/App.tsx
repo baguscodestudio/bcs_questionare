@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './App.css';
 import { useExitListener } from './hooks/useExitListener';
 import { useNuiEvent } from './hooks/useNuiEvent';
+import { fetchNui } from './utils/fetchNui';
 import { Questions, QuestionsProps } from './Questions';
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
   const handleClose = () => {
     setDisplay(false);
     setStart(false);
+    fetchNui('hideFrame');
   };
 
   useExitListener(setDisplay);
