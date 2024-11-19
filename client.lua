@@ -31,21 +31,33 @@ RegisterNUICallback("hideFrame", function(data, cb)
 end)
 
 --- Data Validation function
----@param questions {id: number, answer?: string, image?:string}[]
+---@param questions {id: number, question: string, answers: {id: string, answer?: string, image?: string}[], image?:string}[]
 function DataValidation(questions)
     for i = 1, #questions do
-        if questions[i].answer and type(questions[i].answer) ~= 'string' then
-            print('[QUESTIONARE] ERROR MISMATCH TYPE, EXPECTED STRING FOR answer')
+        if questions[i].answers and type(questions[i].answers) ~= 'table' then
+            print('[QUESTIONARE] ERROR MISMATCH TYPE, EXPECTED array table FOR answer')
             return false
         elseif questions[i].image and type(questions[i].image) ~= 'string' then
             print('[QUESTIONARE] ERROR MISMATCH TYPE, EXPECTED STRING FOR image')
             return false
-        elseif not questions[i].image and not questions[i].answer then
-            print('[QUESTIONARE] ERROR NULL image AND answer! MUST BE EITHER FOR THE ANSWER')
-            return false
         elseif not questions[i].id then
             print('[QUESTIONARE] ERROR NULL id')
             return false
+        elseif not questions[i].question then
+            print('[QUESTIONARE] ERROR NULL question')
+            return false
+        else
+            for j = 1, #questions[i].answers do
+                local answer = questions[i].answers[j]
+                if not answer.answer and not answer.image then
+                    print('[QUESTIONARE] ERROR answer OR image MUST NOT BE NULL')
+                    return false
+                elseif answer.answer and type(answer.answer) ~= "string" then
+                    print('[QUESTIONARE] ERROR answer MUST BE STRING TYPE')
+                elseif answer.image and type(answer.image) ~= "string" then
+                    print('[QUESTIONARE] ERROR image MUST BE STRING TYPE')
+                end
+            end
         end
     end
     return true
