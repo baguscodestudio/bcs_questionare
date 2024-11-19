@@ -1,142 +1,108 @@
--- ONLY CHANGE task variable to your liking the rest you can just leave it be
-local quiz = {
-    task = 'You must answer at least %s correct answer out of %s questions!',
-    title = 'License Test',
-    description = 'Complete this test to get your Driver License',
-    image = 'SIM',
-    cancel = 'Cancel',
-    next = 'Next',
-    question = {
-        {
-            question = 'Default Question',
-            answers = {
-                a = 'Answer is this',
-                b = 'False',
-                c = 'Nope',
-                d = 'Not This',
-                correct = 'a',
-            }
-        }
-    },
-    minimum = 0,
-    shuffleQuestions = false
-}
+local currentQuiz = {}
+local passedTest = nil
 
-local isOpen = false
-local status = {}
-
-function tablelength(T)
-    local count = 0
-    for _ in pairs(T) do count = count + 1 end
-    return count
+---@param show boolean
+function ToggleFrame(show)
+    SetNuiFocus(show, show)
+    SendNUIMessage({
+        action = "setVisible",
+        data = show
+    })
+    SendNUIMessage({
+        action = "initUI",
+        data = UILocale
+    })
 end
 
-RegisterCommand('testquiz', function()
-    exports['bcs_questionare']:openQuiz({
-        title = 'License Test',
-        description = 'Complete this test to get your Driver License',
-        image = 'SIM',
-        minimum = 1,
-        shuffle = false,
-    }, {
-        {
-            question = 'Default Question 1',
-            answers = {
-                a = 'Answer is this',
-                b = 'False',
-                c = 'Nope',
-                d = 'Not This',
-                correct = 'a',
-            }
-        },
-        {
-            question = 'Default Question 2',
-            answers = {
-                a = 'Answer is this',
-                b = 'False',
-                c = 'Nope',
-                d = 'Not This',
-                correct = 'a',
-            }
-        },
-        {
-            question = 'Default Question 3',
-            answers = {
-                a = 'Answer is this',
-                b = 'False',
-                c = 'Nope',
-                d = 'Not This',
-                correct = 'a',
-            }
-        },
-        {
-            question = 'Default Question 4',
-            answers = {
-                a = 'Answer is this',
-                b = 'False',
-                c = 'Nope',
-                d = 'Not This',
-                correct = 'a',
-            }
-        }
-    }, function(correct, questions)
-        exports['hud']:sendAlert('Questionare', 'Test Passed! Answered '..correct..' out of '..questions..' question!', 'success', 3000)
-        print('success', correct, questions)
-    end, function(correct, questions)
-        exports['hud']:sendAlert('Questionare', 'Test Failed! Answered '..correct..' out of '..questions..' question!', 'error', 3000)
-        print('failed', correct, questions)
-    end)
+---@param page string
+function SetPage(page)
+    SendNUIMessage({
+        action = "setPage",
+        data = page
+    })
+end
+
+RegisterNUICallback("hideFrame", function(data, cb)
+    ToggleFrame(false)
+    if passedTest and currentQuiz then
+        passedTest:resolve(false, 0, currentQuiz.home.max)
+    end
+    cb("ok")
 end)
 
-RegisterNUICallback('hideFrame', function(data ,cb)
+--- Data Validation function
+---@param questions {id: number, answer?: string, image?:string}[]
+function DataValidation(questions)
+    for i = 1, #questions do
+        if questions[i].answer and type(questions[i].answer) ~= 'string' then
+            print('[QUESTIONARE] ERROR MISMATCH TYPE, EXPECTED STRING FOR answer')
+            return false
+        elseif questions[i].image and type(questions[i].image) ~= 'string' then
+            print('[QUESTIONARE] ERROR MISMATCH TYPE, EXPECTED STRING FOR image')
+            return false
+        elseif not questions[i].image and not questions[i].answer then
+            print('[QUESTIONARE] ERROR NULL image AND answer! MUST BE EITHER FOR THE ANSWER')
+            return false
+        elseif not questions[i].id then
+            print('[QUESTIONARE] ERROR NULL id')
+            return false
+        end
+    end
+    return true
+end
+
+exports('StartQuiz', function(home, questions)
+    currentQuiz = {}
+    currentQuiz.home = home
+    currentQuiz.home.max = #questions
+    currentQuiz.quiz = questions
+
+    if not DataValidation(questions) then
+        return false
+    end
+
+    passedTest = nil
+    passedTest = promise.new()
+
+    ToggleFrame(true)
+    SetPage('question')
     Wait(100)
-    isOpen = false
-    SetNuiFocus(false, false)
+
     SendNUIMessage({
-        action = 'closeQuiz',
-        data = false
+        action = 'setHomeQuestionare',
+        data = currentQuiz.home
     })
-    cb('ok')
+
+    return Citizen.Await(passedTest)
 end)
 
-exports('openQuiz', function(data, questions, successCb, failedCb)
-    quiz.task = string.format(quiz.task, data.minimum, tablelength(questions))
-    quiz.title = data.title
-    quiz.description = data.description
-    quiz.image = data.image
-    quiz.minimum = data.minimum
-    quiz.shuffleQuestions = data.shuffle
-    quiz.questions = questions
-    SetNuiFocus(true, true)
-    SendNUIMessage({
-        action = 'openQuiz',
-        data = {
-            questions = quiz,
-            display = true
-        }
-    })
-    isOpen = true
-
-    repeat
-        Wait(500)
-    until not isOpen
-
-    if status.success then
-        successCb(status.correct, status.questions)
-        status = {}
-    elseif status.success == false then
-        failedCb(status.correct, status.questions)
-        status = {}
+RegisterNUICallback('getQuestion', function(id, cb)
+    for i = 1, #currentQuiz.quiz do
+        if i == tonumber(id) then
+            cb(currentQuiz.quiz[i])
+            break
+        end
     end
 end)
 
-RegisterNUICallback('finishQuiz', function(data, cb)
-    status.success = data.passed
-    status.correct = data.correct
-    status.questions = data.questions
-    SendNUIMessage({
-        action = 'closeQuiz',
-        data = false
-    })
+RegisterNUICallback('completeTest', function(answers, cb)
+    local correct = 0
+
+    for id, answer in pairs(answers) do
+        for i = 1, #currentQuiz.quiz do
+            local data = currentQuiz.quiz[i]
+            if data.id == id then
+                if data.correct == answer then
+                    correct += 1
+                end
+            end
+        end
+    end
+
+    local min, max = currentQuiz.home.minimum, currentQuiz.home.max
+    passedTest:resolve(correct >= min, correct, max)
+    passedTest = nil
+    currentQuiz = {}
+    ToggleFrame(false)
     cb('ok')
 end)

@@ -1,3 +1,5 @@
+import { isEnvBrowser } from "./misc";
+
 /**
  * Simple wrapper around fetch API tailored for CEF/NUI use. This abstraction
  * can be extended to include AbortController if needed or if the response isn't
@@ -5,29 +7,27 @@
  *
  * @param eventName - The endpoint eventname to target
  * @param data - Data you wish to send in the NUI Callback
+ * @param mockData - Mock data to be returned if in the browser
  *
  * @return returnData - A promise for the data sent back by the NuiCallbacks CB argument
  */
 
-import { isEnvBrowser } from './misc';
-const resourceName = (window as any).GetParentResourceName ? (window as any).GetParentResourceName() : 'nui-frame-app';
+export async function fetchNui<T = any>(eventName: string, data?: any, mockData?: T): Promise<T> {
+  const options = {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: JSON.stringify(data),
+  };
 
-export async function fetchNui<T>(eventName: string, data?: unknown): Promise<T> {
-  if (isEnvBrowser()) return undefined as any; // HACK FOR BORING ERRORS IN DEV
+  if (isEnvBrowser() && mockData) return mockData;
 
-  try {
-    const resp = await fetch(`https://${resourceName}/${eventName}`, {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: JSON.stringify(data),
-    });
+  const resourceName = (window as any).GetParentResourceName ? (window as any).GetParentResourceName() : 'nui-frame-app';
 
-    const respFormatted = await resp.json();
+  const resp = await fetch(`https://${resourceName}/${eventName}`, options);
 
-    return respFormatted;
-  } catch (error) {
-    throw Error(`Failed to fetch NUI callback ${eventName}! (${error})`);
-  }
+  const respFormatted = await resp.json()
+
+  return respFormatted
 }
