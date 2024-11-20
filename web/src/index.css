@@ -22,11 +22,8 @@
 		--muted: 0 0% 14.9%;
 		--muted-foreground: 0 0% 63.9%;
 
-		--accent: 200 95% 58%;
+		--accent: 200 95% 74%;
 		--accent-foreground: 43 14% 80%;
-
-		--destructive: 0 62.8% 30.6%;
-		--destructive-foreground: 0 0% 98%;
 
 		--border: 0 0% 14.9%;
 		--input: 0 0% 14.9%;
@@ -35,8 +32,8 @@
 		--success: 105 36% 30%;
 		--success-foreground: 43 14% 90%;
 
-		--desctructive: 2 49% 40%;
-		--desctructive-foreground: 43 14% 90%;
+		--destructive: 0, 91%, 59%;
+		--destructive-foreground: 43 14% 90%;
 
 		--box: 0 0% 6%;
 		--box-foreground: 180 5% 4%;
@@ -56,6 +53,10 @@
 
 @layer utilities {
 	.blue-gradient {
-		@apply bg-gradient-to-br from-box/90 to-accent/50;
+		@apply bg-gradient-to-br from-box/90 to-accent/60;
+	}
+
+	.red-gradient {
+		@apply bg-gradient-to-br from-box/90 to-destructive;
 	}
 }

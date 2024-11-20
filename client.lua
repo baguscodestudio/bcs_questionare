@@ -1,16 +1,16 @@
 local currentQuiz = {}
 local passedTest = nil
 
+RegisterNUICallback('initLocale', function(_, cb)
+    cb(Config.Locale)
+end)
+
 ---@param show boolean
 function ToggleFrame(show)
     SetNuiFocus(show, show)
     SendNUIMessage({
         action = "setVisible",
         data = show
-    })
-    SendNUIMessage({
-        action = "initUI",
-        data = UILocale
     })
 end
 
@@ -103,18 +103,42 @@ RegisterNUICallback('completeTest', function(answers, cb)
     for id, answer in pairs(answers) do
         for i = 1, #currentQuiz.quiz do
             local data = currentQuiz.quiz[i]
-            if data.id == id then
+            if tonumber(data.id) == tonumber(id) then
                 if data.correct == answer then
                     correct += 1
                 end
+                break
             end
         end
     end
 
     local min, max = currentQuiz.home.minimum, currentQuiz.home.max
-    passedTest:resolve(correct >= min, correct, max)
-    passedTest = nil
+    local success = correct >= min
+    local passedLocale = currentQuiz.home.passed or Config.Locale['passed_test']
+    local failedLocale = currentQuiz.home.failed or Config.Locale['failed_test']
+    SetPage('finish')
+    SendNUIMessage({
+        action = 'setFinish',
+        data = {
+            success = success,
+            min = min,
+            result = correct,
+            max = max,
+            description = success and passedLocale or failedLocale
+        }
+    })
+
+    cb('ok')
+end)
+
+RegisterNUICallback('closeTest', function(data, cb)
+    if passedTest then
+        passedTest:resolve(data.result >= data.min, data.result, data.max)
+        passedTest = nil
+    end
+
     currentQuiz = {}
+
     ToggleFrame(false)
     cb('ok')
 end)

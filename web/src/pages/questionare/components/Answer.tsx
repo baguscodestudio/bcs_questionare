@@ -12,12 +12,18 @@ const Answer = ({
 		<Button
 			onClick={() => onClick(data.id)}
 			className={cn(
-				'whitespace-normal text-wrap h-full',
+				'whitespace-normal text-wrap h-full group',
 				data.image && 'p-0 overflow-clip'
 			)}
 		>
 			{data.answer}
-			{data.image && <img src={data.image} alt="answer image" />}
+			{data.image && (
+				<img
+					src={data.image}
+					alt="answer image"
+					className="h-full object-cover group-hover:size-11/12 transition-all duration-200"
+				/>
+			)}
 		</Button>
 	);
 };

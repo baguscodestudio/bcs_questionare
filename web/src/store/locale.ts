@@ -4,4 +4,7 @@ export const locale: {
 	start: 'Start',
 	cancel: 'Cancel',
 	question: 'Question',
+
+	your_result: 'Your Result',
+	min_required: 'Minimum Required',
 };

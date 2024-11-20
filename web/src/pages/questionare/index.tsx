@@ -43,33 +43,32 @@ const Questionare = () => {
 	useNuiEvent<IHomeData>('setHomeQuestionare', setHomeData);
 
 	return (
-		<div className="h-screen w-screen flex justify-center items-center">
-			<DefaultCard className={cn('py-14 px-20 xl:px-28 gap-6')}>
-				<div className="flex flex-col gap-2 items-center">
-					<div className="text-2xl font-bold">{homeData?.title}</div>
-					<div>{homeData?.subtitle}</div>
-				</div>
-				{homeData?.image && (
-					<img alt="title image" src={homeData.image} className="w-56" />
-				)}
-				<p className="text-center">{homeData?.description}</p>
-				<div className="flex gap-6 mt-4">
-					<Button
-						variant="outline"
-						className="w-32"
-						onClick={() => fetchNui('hideFrame')}
-					>
-						{locale['cancel']}
-					</Button>
-					<Button
-						className="w-32"
-						onClick={() => navigate(`/question/1?max=${homeData?.max}`)}
-					>
-						{locale['start']}
-					</Button>
-				</div>
-			</DefaultCard>
-		</div>
+		<DefaultCard className={cn('blue-gradient py-14 px-20 xl:px-28 gap-6')}>
+			<div className="flex flex-col gap-2 items-center">
+				<div className="text-2xl font-bold">{homeData?.title}</div>
+				<div>{homeData?.subtitle}</div>
+			</div>
+			{homeData?.image && (
+				<img alt="title image" src={homeData.image} className="w-56" />
+			)}
+			<p className="text-center">{homeData?.description}</p>
+			<div className="flex gap-6 mt-4">
+				<Button
+					variant="outline-accent"
+					className="w-32"
+					onClick={() => fetchNui('hideFrame')}
+				>
+					{locale['cancel']}
+				</Button>
+				<Button
+					variant="accent"
+					className="w-32"
+					onClick={() => navigate(`/question/1?max=${homeData?.max}`)}
+				>
+					{locale['start']}
+				</Button>
+			</div>
+		</DefaultCard>
 	);
 };
 

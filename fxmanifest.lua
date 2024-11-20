@@ -15,4 +15,5 @@ files {
     'html/assets/*.css'
 }
 
+client_script 'config.lua'
 client_script "client.lua"

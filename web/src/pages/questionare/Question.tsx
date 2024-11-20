@@ -52,34 +52,36 @@ const Question = () => {
 	};
 
 	return (
-		<div className="h-screen w-screen flex justify-center items-center">
-			<DefaultCard className="p-12 gap-6">
-				{question?.image && (
-					<img alt="question image" src={question?.image} className="w-80" />
-				)}
-				<div className="flex flex-col w-full gap-2">
-					<div className="text-lg">
-						{locale['question']} {no} / {searchParams.get('max')}
-					</div>
-					{/* Progress Bar */}
-					<ProgressBar
-						no={parseInt(no || '1')}
-						max={parseInt(searchParams.get('max') || '10')}
-					/>
+		<DefaultCard className="blue-gradient p-12 gap-6">
+			{question?.image && (
+				<img
+					alt="question image"
+					src={question?.image}
+					className="w-80 rounded-sm"
+				/>
+			)}
+			<div className="flex flex-col w-full gap-2">
+				<div className="text-lg">
+					{locale['question']} {no} / {searchParams.get('max')}
+				</div>
+				{/* Progress Bar */}
+				<ProgressBar
+					no={parseInt(no || '1')}
+					max={parseInt(searchParams.get('max') || '10')}
+				/>
 
+				<div>
 					<div>
-						<div>
-							{no}. {question?.question}
-						</div>
-						<div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 mx-9 mt-7">
-							{question?.answers?.map((val, index) => (
-								<Answer key={index} data={val} onClick={nextQuestion} />
-							))}
-						</div>
+						{no}. {question?.question}
+					</div>
+					<div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 mx-9 mt-7">
+						{question?.answers?.map((val, index) => (
+							<Answer key={index} data={val} onClick={nextQuestion} />
+						))}
 					</div>
 				</div>
-			</DefaultCard>
-		</div>
+			</div>
+		</DefaultCard>
 	);
 };
 
