@@ -1,21 +1,15 @@
 # BCS Questionare
 
 This allows for easy exports and callbacks for configurable quizes or tests.
-![2022-01-16 11-41-50](https://user-images.githubusercontent.com/60974759/149651916-276197c1-f8ce-4a88-bb5a-a39e905237eb.gif)
 
 ## Features
 
 - Easy export and simple clean ui
 - 0.00 ms (duh its a nui)
 
-## Preview
-
-![Preview1](https://media.discordapp.net/attachments/856060200011038762/932165513595981834/Questionare.png?width=810&height=464)
-![Preview2](https://media.discordapp.net/attachments/856060200011038762/932165513906389082/Questionare2.png?width=810&height=464)
-
 ## Documentation
 
-To use the exports it has 4 parameters
+To use the exports it has 2 parameters
 
 ```lua
 local result = exports['bcs_questionare']:StartQuiz(home, questions)
