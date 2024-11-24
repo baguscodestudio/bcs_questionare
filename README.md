@@ -3,7 +3,6 @@
 This allows for easy exports and callbacks for configurable quizes or tests.
 ![2022-01-16 11-41-50](https://user-images.githubusercontent.com/60974759/149651916-276197c1-f8ce-4a88-bb5a-a39e905237eb.gif)
 
-
 ## Features
 
 - Easy export and simple clean ui
@@ -18,93 +17,101 @@ This allows for easy exports and callbacks for configurable quizes or tests.
 
 To use the exports it has 4 parameters
 
+```lua
+local result = exports['bcs_questionare']:StartQuiz(home, questions)
 ```
-exports['bcs_questionare']:openQuiz(data, questions, onsuccesscb, onfailedcb)
-```
 
-The data variable contains of these properties
+- **home**: `table (object)`
 
-| Properties       | Type    | Description                                                     |
-| ---------------- | ------- | --------------------------------------------------------------- |
-| title            | string  | Title shown at the beginning                                    |
-| description      | string  | Description shown at the beginning                              |
-| image (optional) | string  | Image shown at the beginning. Format must be in `imagename`.png |
-| minimum          | number  | Minimum correct answer to pass the test                         |
-| shuffle          | boolean | Whether to randomize the question order or not                  |
+  - minimum: `number`
+    - Minimum correct questions to pass the test
+  - title: `string`
+    - Title of the test
+  - subtitle: `string`
+    - Subtitle of the test
+  - description: `string`
+    - Description of the test
+  - image: `string (url)`
+    - Link of the image
+  - passed?: `string`
+    - End title to show after passing the test
+  - failed?: `string`
+    - End title to show after failign the test
 
-The questions is an array of question object that has these properties
-
-| Properties | Type   | Description                                   |
-| ---------- | ------ | --------------------------------------------- |
-| question   | string | The question                                  |
-| answers    | object | Has answers and the correct answer properties |
+- **questions**: `table (array)`
+  - id: `number`
+  - image?: `string (url)`
+  - question: `string`
+    - The question
+  - **answers**: `table (array & object)`
+    - id: `string`
+    - answer?: `string`
+    - image?: `string (url)`
+    - correct: `string (id)`
 
 #### Example usage
 
 ```lua
-local questions = {
-    {
-        question = 'Default Question 1',
-        answers = {
-            a = 'Answer is this',
-            b = 'False',
-            c = 'Nope',
-            d = 'Not This',
-            correct = 'a',
-        }
-    },
-    {
-        question = 'Default Question 2',
-        answers = {
-            a = 'Answer is this',
-            b = 'False',
-            c = 'Nope',
-            d = 'Not This',
-            correct = 'a',
-        }
-    },
-    {
-        question = 'Default Question 3',
-        answers = {
-            a = 'Answer is this',
-            b = 'False',
-            c = 'Nope',
-            d = 'Not This',
-            correct = 'a',
-        }
-    },
-    {
-        question = 'Default Question 4',
-        answers = {
-            a = 'Answer is this',
-            b = 'False',
-            c = 'Nope',
-            d = 'Not This',
-            correct = 'a',
-        }
-    }
+local home = {
+    minimum = 1,
+    passed = 'You have passed the test',
+    failed = 'You failed the test',
+    title = 'Theory Car',
+    subtitle = 'A license test',
+    description = 'Lorem ipsum dolor sit amet',
+    image = 'url',
 }
 
-exports['bcs_questionare']:openQuiz({
-    title = 'License Test',
-    description = 'Complete this test to get your Driver License',
-    image = 'SIM',
-    minimum = 1,
-    shuffle = false,
-}, questions, function(correct, questions)
-    -- exports['hud']:sendAlert('Questionare', 'Test Passed! Answered '..correct..' out of '..questions..' question!', 'success', 3000)
-    print('success', correct, questions)
-end, function(correct, questions)
-    -- exports['hud']:sendAlert('Questionare', 'Test Failed! Answered '..correct..' out of '..questions..' question!', 'error', 3000)
-    print('failed', correct, questions)
-end)
+local function GenerateQuestions()
+    local tempArr = {}
+    local corrects = ['a', 'b', 'c', 'd']
+    for i=1, 4 do
+        tempArr[#tempArr+1] = {
+            id = i,
+            image = 'url',
+            question = 'Default Question '..i,
+            answers = {
+                {
+                    id='a',
+                    answer = 'Answer is this',
+                    image = 'url'
+                },
+                {
+                    id='b',
+                    answer = 'breh',
+                    image = 'url'
+                },
+                {
+                    id = 'c',
+                    answer = 'False Dahek',
+                    image = 'url'
+                },
+                {
+                    id = 'd',
+                    answer = 'Not wut',
+                    image = 'url'
+                }
+                correct = corrects[math.random(1,4)],
+            }
+        }
+    end
+    return tempArr
+end
+
+local questions = GenerateQuestions()
+
+local result = exports['bcs_questionare']:StartQuiz(home, questions)
+if result then
+    print('passed the test')
+else
+    print('failed the test')
+end
 ```
 
-Add your image in html/images folder as a png, then you can just show the image using the image property in the data parameter
-
 ### Support
-Is available in my discord (No need to create a ticket) or you can create an issue here
-https://discord.gg/caa7xt2d8G
+
+Is available in my discord (Don't create a ticket) or you can create an issue here
+https://discord.gg/92JZmrMMez
 
 ## Contributing
 
