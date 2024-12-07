@@ -96,7 +96,7 @@ local questions = GenerateQuestions()
 
 local result = exports['bcs_questionare']:StartQuiz(home, questions)
 if result then
-    local mistakes = data.max - data.result
+    local mistakes = result.max - result.result
     print(('passed the test with %s mistakes'):format(mistakes))
 else
     print('failed the test')
