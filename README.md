@@ -64,6 +64,7 @@ local function GenerateQuestions()
             id = i,
             image = 'url',
             question = 'Default Question '..i,
+            correct = corrects[math.random(1,4)],
             answers = {
                 {
                     id='a',
@@ -85,7 +86,6 @@ local function GenerateQuestions()
                     answer = 'Not wut',
                     image = 'url'
                 }
-                correct = corrects[math.random(1,4)],
             }
         }
     end
@@ -96,7 +96,8 @@ local questions = GenerateQuestions()
 
 local result = exports['bcs_questionare']:StartQuiz(home, questions)
 if result then
-    print('passed the test')
+    local mistakes = result.max - result.result
+    print(('passed the test with %s mistakes'):format(mistakes))
 else
     print('failed the test')
 end

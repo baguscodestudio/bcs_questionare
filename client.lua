@@ -133,7 +133,12 @@ end)
 
 RegisterNUICallback('closeTest', function(data, cb)
     if passedTest then
-        passedTest:resolve(data.result >= data.min, data.result, data.max)
+        passedTest:resolve({
+            passed = data.result >= data.min, 
+            result = data.result, 
+            max = data.max,
+            min = data.min
+        })
         passedTest = nil
     end
 
