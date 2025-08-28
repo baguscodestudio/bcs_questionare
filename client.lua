@@ -78,19 +78,18 @@ exports('StartQuiz', function(home, questions)
 
     ToggleFrame(true)
     SetPage('question')
-    Wait(100)
-
-    SendNUIMessage({
-        action = 'setHomeQuestionare',
-        data = currentQuiz.home
-    })
 
     return Citizen.Await(passedTest)
+end)
+
+RegisterNUICallback('getHomeQuestionare', function(_, cb)
+    cb(currentQuiz.home)
 end)
 
 RegisterNUICallback('getQuestion', function(id, cb)
     for i = 1, #currentQuiz.quiz do
         if i == tonumber(id) then
+            currentQuiz.quiz[i].max = currentQuiz.home.max
             cb(currentQuiz.quiz[i])
             break
         end
@@ -134,8 +133,8 @@ end)
 RegisterNUICallback('closeTest', function(data, cb)
     if passedTest then
         passedTest:resolve({
-            passed = data.result >= data.min, 
-            result = data.result, 
+            passed = data.result >= data.min,
+            result = data.result,
             max = data.max,
             min = data.min
         })

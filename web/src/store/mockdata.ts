@@ -30,4 +30,5 @@ export const MOCK_QUESTION: IQuestionData = {
 		'Berapa Kecepatan Maksimal Untuk Kendaraan Saat Melintasi Area Perkotaan?',
 	image: 'images/question1.png',
 	answers: MOCK_ANSWERS,
+	max: 20,
 };

@@ -1,19 +1,18 @@
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import DefaultCard from '../../components/defaultcard';
 import { useEffect, useState } from 'react';
-import { Button } from '../../components/ui/button';
 import { locale } from '../../store/locale';
 import ProgressBar from './components/ProgressBar';
 import Answer from './components/Answer';
 import { useAnswers } from '../../providers/AnswerProvider';
 import { fetchNui } from '../../utils/fetchNui';
 import { MOCK_QUESTION } from '../../store/mockdata';
-import Questionare from '.';
 
 export interface IQuestionData {
 	id: number;
 	question: string;
 	image?: string;
+	max: number;
 	answers: {
 		id: string;
 		answer?: string;
@@ -24,7 +23,6 @@ export interface IQuestionData {
 const Question = () => {
 	const { no } = useParams();
 	const { answers, setAnswers } = useAnswers();
-	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
 
 	const [question, setQuestion] = useState<IQuestionData>();
@@ -38,14 +36,14 @@ const Question = () => {
 		if (no && question) {
 			tempAnswers[question.id] = id;
 			// @TODO Correct logic of matching questions number and id
-			if (no == searchParams.get('max')) {
+			if (no == question.max.toString()) {
 				fetchNui('completeTest', tempAnswers);
 				setQuestion(undefined);
 				setAnswers({});
 			} else {
 				setAnswers(tempAnswers);
 				navigate(
-					`/question/${parseInt(no!) + 1}?max=${searchParams.get('max')}`
+					`/question/${parseInt(no!) + 1}?max=${question.max.toString()}`
 				);
 			}
 		}
@@ -60,27 +58,29 @@ const Question = () => {
 					className="w-80 rounded-sm"
 				/>
 			)}
-			<div className="flex flex-col w-full gap-2">
-				<div className="text-lg">
-					{locale['question']} {no} / {searchParams.get('max')}
-				</div>
-				{/* Progress Bar */}
-				<ProgressBar
-					no={parseInt(no || '1')}
-					max={parseInt(searchParams.get('max') || '10')}
-				/>
+			{question && (
+				<div className="flex flex-col w-full gap-2">
+					<div className="text-lg">
+						{locale['question']} {no} / {question.max.toString()}
+					</div>
+					{/* Progress Bar */}
+					<ProgressBar
+						no={parseInt(no || '1')}
+						max={parseInt(question.max.toString() || '10')}
+					/>
 
-				<div>
 					<div>
-						{no}. {question?.question}
-					</div>
-					<div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 mx-9 mt-7">
-						{question?.answers?.map((val, index) => (
-							<Answer key={index} data={val} onClick={nextQuestion} />
-						))}
+						<div>
+							{no}. {question.question}
+						</div>
+						<div className="grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4 mx-9 mt-7">
+							{question?.answers?.map((val, index) => (
+								<Answer key={index} data={val} onClick={nextQuestion} />
+							))}
+						</div>
 					</div>
 				</div>
-			</div>
+			)}
 		</DefaultCard>
 	);
 };

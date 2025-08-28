@@ -38,9 +38,8 @@ const Questionare = () => {
 
 	useEffect(() => {
 		if (!visible) setHomeData(undefined);
+		else fetchNui<IHomeData>('getHomeQuestionare').then(setHomeData);
 	}, [visible]);
-
-	useNuiEvent<IHomeData>('setHomeQuestionare', setHomeData);
 
 	return (
 		<DefaultCard className={cn('blue-gradient py-14 px-20 xl:px-28 gap-6')}>
