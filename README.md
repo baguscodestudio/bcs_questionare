@@ -31,6 +31,8 @@ local result = exports['bcs_questionare']:StartQuiz(home, questions)
     - End title to show after passing the test
   - failed?: `string`
     - End title to show after failign the test
+  - shuffle?: `boolean`
+    - Do you want to shuffle the questions?
 
 - **questions**: `table (array)`
   - id: `number`
@@ -54,6 +56,7 @@ local home = {
     subtitle = 'A license test',
     description = 'Lorem ipsum dolor sit amet',
     image = 'url',
+    shuffle = true,
 }
 
 local function GenerateQuestions()

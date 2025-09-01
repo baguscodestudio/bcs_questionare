@@ -63,10 +63,31 @@ function DataValidation(questions)
     return true
 end
 
+local function ShuffleArray(array)
+    local shuffled = {}
+    local indices = {}
+
+    for i = 1, #array do
+        table.insert(indices, i)
+    end
+
+    while #indices > 0 do
+        local randomIndex = math.random(1, #indices)
+        local index = table.remove(indices, randomIndex)
+        array[index].id = #shuffled + 1
+        table.insert(shuffled, array[index])
+    end
+
+    return shuffled
+end
+
 exports('StartQuiz', function(home, questions)
     currentQuiz = {}
     currentQuiz.home = home
     currentQuiz.home.max = #questions
+    if home.shuffle then
+        questions = ShuffleArray(questions)
+    end
     currentQuiz.quiz = questions
 
     if not DataValidation(questions) then
